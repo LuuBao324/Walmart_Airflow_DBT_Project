@@ -2,6 +2,7 @@ from airflow.sdk import dag, task
 from airflow.providers.standard.operators.bash import BashOperator
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service.jobs import RunLifeCycleState, RunResultState
+from datetime import timedelta
 import time
 import pendulum
 import os
@@ -14,14 +15,14 @@ import os
 )
 def orchestrate():
 
-    @task
+    @task(execution_timeout=timedelta(hours=2))
     def ingest_cdc():
         ws = WorkspaceClient(
             host=os.environ.get("DATABRICKS_HOST"),
             token=os.environ.get("DATABRICKS_TOKEN")
         )
 
-        job_trigger = ws.jobs.run_now(job_id="390364974550102")
+        job_trigger = ws.jobs.run_now(job_id=int(os.environ["DATABRICKS_JOB_ID"]))
 
         print(job_trigger)
 
@@ -38,7 +39,7 @@ def orchestrate():
                     raise RuntimeError(f"Job finished with result: {job_run.state.result_state}")
                 
             time.sleep(5)
-            return "CDC Ingestion Completed"
+        return "CDC Ingestion Completed"
 
     @task.bash
     def clean_target():
@@ -72,12 +73,6 @@ def orchestrate():
         bash_command="dbt test --select silver_b"
     )
 
-    gold_ephemeral = BashOperator(
-        task_id="gold_ephemeral",
-        cwd="/opt/airflow/walmart_project",
-        bash_command="dbt run --select gold/ephemeral"
-    )
-
     gold_dimensions = BashOperator(
         task_id="gold_dimensions",
         cwd="/opt/airflow/walmart_project",
@@ -90,6 +85,12 @@ def orchestrate():
         bash_command="dbt run --select gold/fact"
     )
 
-    ingest_cdc() >> clean_target() >> source_freshness() >> silver_technical >> silver_technical_test >> silver_business >> silver_business_test >> gold_ephemeral >> gold_dimensions >> gold_fact
+    gold_test = BashOperator(
+        task_id="gold_test",
+        cwd="/opt/airflow/walmart_project",
+        bash_command="dbt test --select gold",
+    )
+
+    ingest_cdc() >> clean_target() >> source_freshness() >> silver_technical >> silver_technical_test >> silver_business >> silver_business_test >> gold_dimensions >> gold_fact >> gold_test
 
 orchestrate_dag = orchestrate()

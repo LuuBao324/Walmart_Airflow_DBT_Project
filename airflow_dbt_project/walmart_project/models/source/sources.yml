@@ -1,11 +1,18 @@
+version: 2
 sources:
-    - name: walmart_databricks
-      database: walmart
-      schema: bronze
-      tables:
-        - name: orders
-        - name: customers
-        - name: products
-        - name: order_items
-        - name: stores
-        - name: employees
+  - name: walmart_databricks
+    database: walmart
+    schema: bronze
+    config:
+      # Business update recency, not an ingestion heartbeat.
+      loaded_at_field: updated_timestamp
+      freshness:
+        warn_after: {count: 26, period: hour}
+        error_after: {count: 48, period: hour}
+    tables:
+      - name: orders
+      - name: customers
+      - name: products
+      - name: order_items
+      - name: stores
+      - name: employees

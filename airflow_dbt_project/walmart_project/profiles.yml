@@ -6,6 +6,6 @@ walmart_project:
       http_path: /sql/1.0/warehouses/72d0bcb4e066680b
       schema: dbt_schema
       threads: 1
-      token: {{env_var('DATABRICKS_TOKEN')}}
+      token: "{{ env_var('DATABRICKS_TOKEN') }}"
       type: databricks
   target: dev

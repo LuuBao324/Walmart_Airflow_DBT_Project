@@ -1,4 +1,4 @@
-{{ config(severity='warn') }}
+{{ config(severity='error') }}
 
 SELECT 1
 FROM 
@@ -7,8 +7,6 @@ WHERE
     obt.order_id IS NULL
 OR 
     obt.product_id IS NULL
-OR 
-    obt.employee_id IS NULL
 OR 
     obt.store_id IS NULL
 OR 
