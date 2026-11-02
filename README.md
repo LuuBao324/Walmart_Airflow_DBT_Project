@@ -90,11 +90,3 @@ Check the dbt connection:
 ```powershell
 docker compose exec airflow-worker bash -lc "cd /opt/airflow/walmart_project && dbt debug"
 ```
-
-If upgrading from the earlier models, rebuild OBT and fact, and recreate the development `dim_order` snapshot because its input grain has changed. Back up any history you need before recreating the snapshot.
-
-## Scope and Limitations
-
-Keep `.env` and tokens out of Git. The project produces tables for retail analysis; it does not include a dashboard. Incremental loading uses an `updated_timestamp` watermark and assumes new changes have timestamps greater than the previous maximum. Hard deletes and late-arriving changes with older timestamps are not handled yet.
-
-This project gave me hands-on practice with SQL modeling, incremental loading, historical snapshots, data quality checks, and pipeline orchestration with Airflow.
