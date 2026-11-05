@@ -55,38 +55,30 @@ Ingestion → Clean → Source freshness → Silver Technical → Tests
 
 ```text
 airflow_dbt_project/
-  dags/orchestrate.py       # Pipeline orchestration
-  docker-compose.yaml      # Airflow, Redis, and metadata PostgreSQL
-  Dockerfile
-  walmart_project/         # dbt project mounted into Airflow
-walmart_project/           # dbt working copy outside Docker
-  models/source/           # Bronze source definitions
-  models/silver_t/         # Incremental entity models
-  models/silver_b/         # One Big Table
-  models/gold/             # Fact, ephemeral models, and tests
-  snapshots/               # Dimension history
-  tests/                   # SQL data tests
+├── dags/
+│   └── orchestrate.py       # Pipeline orchestration
+├── docker-compose.yaml      # Airflow, Redis, and metadata PostgreSQL
+├── Dockerfile
+└── walmart_project/         # dbt project mounted into Airflow/
+    ├── models/source/           # Bronze source definitions
+    ├── models/silver_t/         # Incremental entity models
+    ├── models/silver_b/         # One Big Table
+    ├── models/gold/             # Fact, ephemeral models, and tests
+    ├── snapshots/               # Dimension history
+    └── tests/
 ```
 
 ## Getting Started
 
 Prepare a source PostgreSQL database, a Databricks workspace, a SQL warehouse, and an ingestion job that loads the six Bronze tables. Loading PostgreSQL and implementing the Databricks ingestion job are handled outside this repository.
 
-1. Copy `airflow_dbt_project/.env.example` to `.env` in the same directory. Set `DATABRICKS_HOST`, `DATABRICKS_TOKEN`, `DATABRICKS_JOB_ID`, and a valid Fernet key.
+1. Copy `airflow_dbt_project/.env.example` to `.env` in the same directory. Set `DATABRICKS_HOST`, `DATABRICKS_TOKEN`.
 2. Configure the host, HTTP path, and token environment variable in `airflow_dbt_project/walmart_project/profiles.yml` for your workspace.
 3. Start Airflow:
 
    ```powershell
    cd airflow_dbt_project
-   docker compose build
-   docker compose up airflow-init
    docker compose up -d
    ```
 
 4. Open `http://localhost:8080`, sign in with the credentials from `.env`, and trigger the `orchestrate` DAG.
-
-Check the dbt connection:
-
-```powershell
-docker compose exec airflow-worker bash -lc "cd /opt/airflow/walmart_project && dbt debug"
-```
