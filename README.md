@@ -49,7 +49,7 @@ Ingestion → Clean → Source freshness → Silver Technical → Tests
 - Airflow waits for the Databricks job to succeed before running dbt. A failed job fails the task; ingestion has a two-hour timeout.
 - `not_null` and `unique` tests check all six Silver entity keys and the order item key in OBT and fact. Missing OBT keys fail validation.
 - The order snapshot reads from `orders_t`, keeping one input row per order.
-- Source freshness uses `updated_timestamp`, with a warning after 26 hours and an error after 48 hours. See the [dbt freshness configuration](https://docs.getdbt.com/reference/resource-configs/freshness). This measures business update recency, so rarely updated tables may appear stale even when ingestion succeeds. Adjust thresholds to match the dataset.
+- Source freshness uses `updated_timestamp`, with a warning after 26 hours and an error after 48 hours. This measures business update recency, so rarely updated tables may appear stale even when ingestion succeeds. Adjust thresholds to match the dataset.
 
 ## Repository Structure
 
