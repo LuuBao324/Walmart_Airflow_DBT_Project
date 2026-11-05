@@ -54,18 +54,19 @@ Ingestion → Clean → Source freshness → Silver Technical → Tests
 ## Repository Structure
 
 ```text
-airflow_dbt_project/
-├── dags/
-│   └── orchestrate.py       # Pipeline orchestration
-├── docker-compose.yaml      # Airflow, Redis, and metadata PostgreSQL
-├── Dockerfile
-└── walmart_project/         # dbt project mounted into Airflow/
-    ├── models/source/           # Bronze source definitions
-    ├── models/silver_t/         # Incremental entity models
-    ├── models/silver_b/         # One Big Table
-    ├── models/gold/             # Fact, ephemeral models, and tests
-    ├── snapshots/               # Dimension history
-    └── tests/
+.
+└── airflow_dbt_project/
+    ├── dags/
+    │   └── orchestrate.py       # Pipeline orchestration
+    ├── docker-compose.yaml      # Airflow, Redis, and metadata PostgreSQL
+    ├── Dockerfile
+    └── walmart_project/         # dbt project mounted into Airflow/
+        ├── models/source/           # Bronze source definitions
+        ├── models/silver_t/         # Incremental entity models
+        ├── models/silver_b/         # One Big Table
+        ├── models/gold/             # Fact, ephemeral models, and tests
+        ├── snapshots/               # Dimension history
+        └── tests/
 ```
 
 ## Getting Started
